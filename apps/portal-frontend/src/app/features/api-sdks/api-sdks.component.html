@@ -32,5 +32,52 @@
         </mat-card>
       }
     </div>
+
+    <section class="export-section">
+      <h2>Exportar para Postman</h2>
+      <p>
+        Baixe a coleção gerada a partir do contrato OpenAPI desta API e o arquivo de
+        ambiente correspondente para importar no Postman.
+      </p>
+
+      <mat-card class="export-card">
+        <mat-card-content>
+          <div class="export-row">
+            <div>
+              <h4>Coleção</h4>
+              <p>Todos os endpoints, parâmetros e schemas desta API.</p>
+            </div>
+            <a
+              mat-stroked-button
+              color="primary"
+              [href]="apiService.postmanCollectionUrl(detail.meta.slug)"
+              download
+            >
+              <mat-icon>download</mat-icon>
+              Baixar coleção (.json)
+            </a>
+          </div>
+
+          <div class="export-row">
+            <div>
+              <h4>Ambientes</h4>
+              <p>Variáveis de URL base e credencial para cada ambiente configurado.</p>
+            </div>
+            <div class="env-buttons">
+              @for (env of environmentKeys(); track env) {
+                <a
+                  mat-stroked-button
+                  [href]="apiService.postmanEnvironmentUrl(detail.meta.slug, env)"
+                  download
+                >
+                  <mat-icon>download</mat-icon>
+                  {{ env }}
+                </a>
+              }
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
   }
 </div>

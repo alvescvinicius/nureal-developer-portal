@@ -5,6 +5,7 @@ import {
   getApiDocContent,
   listApis,
 } from '../apiRegistry';
+import { buildPostmanCollection, buildPostmanEnvironment } from '../postmanExport';
 import { TryRequestBody } from '../types';
 
 const router = Router();
@@ -43,6 +44,51 @@ router.get('/:slug/docs/:fileName', (req: Request, res: Response) => {
     return res.status(404).json({ error: `Documento '${fileName}' não encontrado.` });
   }
   res.type('text/markdown').send(content);
+});
+
+// GET /api/apis/:slug/export/postman - download a Postman Collection v2.1 built from the OpenAPI spec
+router.get('/:slug/export/postman', async (req: Request, res: Response) => {
+  const { slug } = req.params;
+  const detail = getApiDetail(slug);
+  if (!detail) {
+    return res.status(404).json({ error: `API '${slug}' não encontrada.` });
+  }
+
+  try {
+    const collection = await buildPostmanCollection(detail);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${slug}.postman_collection.json"`,
+    );
+    res.json(collection);
+  } catch (err) {
+    res.status(500).json({
+      error: 'Falha ao gerar a coleção Postman.',
+      details: err instanceof Error ? err.message : String(err),
+    });
+  }
+});
+
+// GET /api/apis/:slug/export/postman-environment/:env - download a Postman Environment file for one environment
+router.get('/:slug/export/postman-environment/:env', (req: Request, res: Response) => {
+  const { slug, env } = req.params;
+  const detail = getApiDetail(slug);
+  if (!detail) {
+    return res.status(404).json({ error: `API '${slug}' não encontrada.` });
+  }
+
+  const environment = buildPostmanEnvironment(detail, env.toUpperCase());
+  if (!environment) {
+    return res
+      .status(400)
+      .json({ error: `Ambiente '${env}' não configurado para a API '${slug}'.` });
+  }
+
+  res.setHeader(
+    'Content-Disposition',
+    `attachment; filename="${slug}-${env.toLowerCase()}.postman_environment.json"`,
+  );
+  res.json(environment);
 });
 
 // POST /api/apis/:slug/try - proxy a request to the real API

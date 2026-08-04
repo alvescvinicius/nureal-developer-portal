@@ -38,3 +38,52 @@
   font-size: 0.78rem;
   white-space: pre-wrap;
 }
+
+.export-section {
+  margin-top: 32px;
+
+  h2 {
+    margin-bottom: 4px;
+  }
+
+  > p {
+    max-width: 720px;
+    color: rgba(0, 0, 0, 0.6);
+    margin-bottom: 16px;
+  }
+}
+
+.export-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  h4 {
+    margin: 0 0 2px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  a[mat-stroked-button] {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+  }
+}
+
+.env-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}

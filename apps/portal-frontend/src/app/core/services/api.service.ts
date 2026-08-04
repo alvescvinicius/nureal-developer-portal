@@ -33,4 +33,12 @@ export class ApiService {
   tryApi(slug: string, payload: TryApiRequestPayload): Observable<TryApiResponsePayload> {
     return this.http.post<TryApiResponsePayload>(`${this.baseUrl}/${slug}/try`, payload);
   }
+
+  postmanCollectionUrl(slug: string): string {
+    return `${this.baseUrl}/${slug}/export/postman`;
+  }
+
+  postmanEnvironmentUrl(slug: string, environment: string): string {
+    return `${this.baseUrl}/${slug}/export/postman-environment/${environment}`;
+  }
 }

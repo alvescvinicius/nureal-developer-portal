@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
@@ -18,7 +20,14 @@ interface SdkInfo {
 @Component({
   selector: 'app-api-sdks',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTabsModule, MatProgressSpinnerModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatTabsModule,
+    MatProgressSpinnerModule,
+  ],
   templateUrl: './api-sdks.component.html',
   styleUrl: './api-sdks.component.scss',
 })
@@ -30,8 +39,12 @@ export class ApiSdksComponent implements OnInit {
 
   constructor(
     private readonly route: ActivatedRoute,
-    private readonly apiService: ApiService,
+    readonly apiService: ApiService,
   ) {}
+
+  environmentKeys(): string[] {
+    return Object.keys(this.detail?.environments ?? {});
+  }
 
   ngOnInit(): void {
     const slug = this.route.snapshot.paramMap.get('slug');
