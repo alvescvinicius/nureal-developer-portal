@@ -1,0 +1,21 @@
+{
+  "name": "nureal-developer-portal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Portal interno de desenvolvedor da Nureal — documentação, contratos, ambientes e teste de todas as APIs internas.",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c blue,green \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev --workspace=portal-backend",
+    "dev:frontend": "npm run start --workspace=portal-frontend",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "npm run build --workspace=portal-backend",
+    "build:frontend": "npm run build --workspace=portal-frontend -- --configuration production",
+    "start:backend": "npm run start --workspace=portal-backend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

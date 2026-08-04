@@ -1,0 +1,90 @@
+.page-header {
+  margin-bottom: 24px;
+
+  h1 {
+    margin-bottom: 4px;
+  }
+
+  p {
+    color: rgba(0, 0, 0, 0.6);
+    max-width: 720px;
+  }
+
+  mat-chip-set {
+    margin-top: 8px;
+  }
+}
+
+.error-text {
+  color: #b00020;
+}
+
+.method-badge {
+  display: inline-block;
+  min-width: 60px;
+  text-align: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  margin-right: 12px;
+  background: #757575;
+
+  &[data-method='get'] {
+    background: #2e7d32;
+  }
+  &[data-method='post'] {
+    background: #1565c0;
+  }
+  &[data-method='put'] {
+    background: #ef6c00;
+  }
+  &[data-method='patch'] {
+    background: #6a1b9a;
+  }
+  &[data-method='delete'] {
+    background: #c62828;
+  }
+}
+
+.path {
+  font-family: 'Roboto Mono', monospace;
+}
+
+.muted {
+  color: rgba(0, 0, 0, 0.5);
+  padding: 12px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+
+  th,
+  td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    font-size: 0.85rem;
+  }
+
+  th {
+    color: rgba(0, 0, 0, 0.6);
+    font-weight: 600;
+  }
+}
+
+.schema-block {
+  background: #f5f5f5;
+  padding: 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.8rem;
+  margin: 12px 0;
+}
+
+.response-block h4 {
+  margin-bottom: 4px;
+}

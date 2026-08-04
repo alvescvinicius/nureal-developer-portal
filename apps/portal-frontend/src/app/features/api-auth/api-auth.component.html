@@ -1,0 +1,30 @@
+<div class="auth">
+  @if (loading) {
+    <mat-spinner diameter="32"></mat-spinner>
+  }
+
+  @if (loadError) {
+    <p class="error-text">Não foi possível carregar as informações de autenticação.</p>
+  }
+
+  @if (detail) {
+    <header class="page-header">
+      <h1>{{ detail.meta.name }} — Autenticação</h1>
+      <mat-chip-set>
+        <mat-chip disableRipple>tipo: {{ detail.meta.auth }}</mat-chip>
+      </mat-chip-set>
+    </header>
+
+    <p class="instructions">{{ authInstructions() }}</p>
+
+    <h2>Security Schemes (OpenAPI)</h2>
+    @for (entry of securitySchemes; track entry[0]) {
+      <div class="scheme-block">
+        <h3>{{ entry[0] }}</h3>
+        <pre>{{ entry[1] | json }}</pre>
+      </div>
+    } @empty {
+      <p class="muted">Nenhum security scheme declarado na spec desta API.</p>
+    }
+  }
+</div>

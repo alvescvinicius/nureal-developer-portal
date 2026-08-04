@@ -1,0 +1,40 @@
+.page-header {
+  margin-bottom: 24px;
+
+  h1 {
+    margin-bottom: 4px;
+  }
+
+  p {
+    max-width: 720px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.error-text {
+  color: #b00020;
+}
+
+.sdk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.sdk-card {
+  h4 {
+    margin: 12px 0 4px;
+    font-size: 0.85rem;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.code-block {
+  background: #263238;
+  color: #eceff1;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.78rem;
+  white-space: pre-wrap;
+}

@@ -1,0 +1,36 @@
+<div class="sdks">
+  @if (loading) {
+    <mat-spinner diameter="32"></mat-spinner>
+  }
+
+  @if (loadError) {
+    <p class="error-text">Não foi possível carregar as informações desta API.</p>
+  }
+
+  @if (detail) {
+    <header class="page-header">
+      <h1>{{ detail.meta.name }} — SDKs</h1>
+      <p>
+        SDKs oficiais para facilitar a integração com a API {{ detail.meta.name }}.
+        <em>Instruções ilustrativas — os pacotes abaixo são placeholders.</em>
+      </p>
+    </header>
+
+    <div class="sdk-grid">
+      @for (sdk of sdks; track sdk.language) {
+        <mat-card class="sdk-card">
+          <mat-card-header>
+            <mat-card-title>{{ sdk.language }}</mat-card-title>
+            <mat-card-subtitle>{{ sdk.packageManager }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <h4>Instalação</h4>
+            <pre class="code-block">{{ sdk.installCommand }}</pre>
+            <h4>Uso</h4>
+            <pre class="code-block">{{ sdk.usageSnippet }}</pre>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

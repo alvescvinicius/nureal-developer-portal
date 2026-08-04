@@ -1,0 +1,255 @@
+openapi: 3.0.3
+info:
+  title: Nureal Garantia API
+  description: >
+    API responsável pela emissão, consulta, cancelamento e listagem de apólices
+    de seguro garantia da Nureal.
+  version: "1.2.0"
+  contact:
+    name: Squad Garantia
+    email: squad-garantia@nureal.com.br
+servers:
+  - url: /garantia
+tags:
+  - name: Apolices
+    description: Operações sobre apólices de seguro garantia
+paths:
+  /v1/apolices:
+    get:
+      operationId: listarApolices
+      tags: [Apolices]
+      summary: Lista apólices de garantia
+      description: Retorna uma lista paginada de apólices de seguro garantia cadastradas.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Número da página (inicia em 1)
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Quantidade de itens por página
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: status
+          in: query
+          description: Filtra apólices pelo status
+          required: false
+          schema:
+            $ref: '#/components/schemas/ApoliceStatus'
+      responses:
+        '200':
+          description: Lista de apólices retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 42
+                  page:
+                    type: integer
+                    example: 1
+                  pageSize:
+                    type: integer
+                    example: 20
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Apolice'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      operationId: emitirApolice
+      tags: [Apolices]
+      summary: Emite uma nova apólice de garantia
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NovaApoliceRequest'
+      responses:
+        '201':
+          description: Apólice emitida com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apolice'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /v1/apolices/{apoliceId}:
+    get:
+      operationId: obterApolice
+      tags: [Apolices]
+      summary: Consulta uma apólice pelo identificador
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: apoliceId
+          in: path
+          required: true
+          description: Identificador único da apólice
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Apólice encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apolice'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      operationId: cancelarApolice
+      tags: [Apolices]
+      summary: Cancela uma apólice de garantia
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: apoliceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [motivo]
+              properties:
+                motivo:
+                  type: string
+                  example: "Solicitação do segurado"
+      responses:
+        '200':
+          description: Apólice cancelada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apolice'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    ApoliceStatus:
+      type: string
+      enum: [ATIVA, CANCELADA, EXPIRADA, EM_ANALISE]
+    Apolice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        numero:
+          type: string
+          example: "GAR-2026-000123"
+        tomador:
+          type: string
+          example: "Construtora Alfa Ltda"
+        segurado:
+          type: string
+          example: "Prefeitura Municipal de Exemplo"
+        valorGarantido:
+          type: number
+          format: double
+          example: 150000.00
+        status:
+          $ref: '#/components/schemas/ApoliceStatus'
+        dataEmissao:
+          type: string
+          format: date-time
+        dataVigenciaFim:
+          type: string
+          format: date
+    NovaApoliceRequest:
+      type: object
+      required: [tomador, segurado, valorGarantido, dataVigenciaFim]
+      properties:
+        tomador:
+          type: string
+          example: "Construtora Alfa Ltda"
+        segurado:
+          type: string
+          example: "Prefeitura Municipal de Exemplo"
+        valorGarantido:
+          type: number
+          format: double
+          example: 150000.00
+        dataVigenciaFim:
+          type: string
+          format: date
+          example: "2027-01-31"
+    ErroPadrao:
+      type: object
+      properties:
+        codigo:
+          type: string
+          example: "GARANTIA_400"
+        mensagem:
+          type: string
+          example: "Campo 'valorGarantido' é obrigatório"
+        timestamp:
+          type: string
+          format: date-time
+  responses:
+    BadRequest:
+      description: Requisição inválida
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErroPadrao'
+    Unauthorized:
+      description: Credenciais ausentes ou inválidas
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErroPadrao'
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErroPadrao'
+    InternalError:
+      description: Erro interno inesperado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErroPadrao'

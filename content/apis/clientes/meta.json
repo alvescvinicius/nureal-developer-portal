@@ -1,0 +1,6 @@
+{
+  "name": "Clientes",
+  "slug": "clientes",
+  "description": "API para cadastro, consulta e atualização de clientes (pessoas físicas e jurídicas).",
+  "auth": "apiKey"
+}

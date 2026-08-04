@@ -1,0 +1,265 @@
+openapi: 3.0.3
+info:
+  title: Nureal Clientes API
+  description: API para cadastro, consulta, atualização e remoção de clientes (pessoas físicas e jurídicas).
+  version: "1.5.0"
+  contact:
+    name: Squad Clientes
+    email: squad-clientes@nureal.com.br
+servers:
+  - url: /clientes
+tags:
+  - name: Clientes
+    description: Operações sobre o cadastro de clientes
+paths:
+  /v1/clientes:
+    get:
+      operationId: listarClientes
+      tags: [Clientes]
+      summary: Lista clientes cadastrados
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: documento
+          in: query
+          description: CPF ou CNPJ do cliente
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Lista de clientes retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 120
+                  page:
+                    type: integer
+                    example: 1
+                  pageSize:
+                    type: integer
+                    example: 20
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cliente'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      operationId: criarCliente
+      tags: [Clientes]
+      summary: Cadastra um novo cliente
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NovoClienteRequest'
+      responses:
+        '201':
+          description: Cliente cadastrado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /v1/clientes/{clienteId}:
+    get:
+      operationId: obterCliente
+      tags: [Clientes]
+      summary: Consulta um cliente pelo identificador
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: clienteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Cliente encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      operationId: atualizarCliente
+      tags: [Clientes]
+      summary: Atualiza os dados cadastrais de um cliente
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: clienteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NovoClienteRequest'
+      responses:
+        '200':
+          description: Cliente atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      operationId: removerCliente
+      tags: [Clientes]
+      summary: Remove (inativa) um cliente
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: clienteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Cliente removido com sucesso
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    TipoPessoa:
+      type: string
+      enum: [FISICA, JURIDICA]
+    Cliente:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nome:
+          type: string
+          example: "Ana Lima"
+        tipoPessoa:
+          $ref: '#/components/schemas/TipoPessoa'
+        documento:
+          type: string
+          example: "123.456.789-00"
+        email:
+          type: string
+          format: email
+          example: "ana.lima@example.com"
+        telefone:
+          type: string
+          example: "+55 11 98888-7777"
+        dataCadastro:
+          type: string
+          format: date-time
+    NovoClienteRequest:
+      type: object
+      required: [nome, tipoPessoa, documento, email]
+      properties:
+        nome:
+          type: string
+          example: "Ana Lima"
+        tipoPessoa:
+          $ref: '#/components/schemas/TipoPessoa'
+        documento:
+          type: string
+          example: "123.456.789-00"
+        email:
+          type: string
+          format: email
+          example: "ana.lima@example.com"
+        telefone:
+          type: string
+          example: "+55 11 98888-7777"
+    ErroPadrao:
+      type: object
+      properties:
+        codigo:
+          type: string
+          example: "CLIENTES_400"
+        mensagem:
+          type: string
+          example: "Campo 'documento' inválido"
+        timestamp:
+          type: string
+          format: date-time
+  responses:
+    BadRequest:
+      description: Requisição inválida
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErroPadrao'
+    Unauthorized:
+      description: Credenciais ausentes ou inválidas
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErroPadrao'
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErroPadrao'
+    InternalError:
+      description: Erro interno inesperado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErroPadrao'

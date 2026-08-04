@@ -1,0 +1,68 @@
+.page-header {
+  margin-bottom: 16px;
+
+  h1 {
+    margin-bottom: 4px;
+  }
+
+  mat-chip-set {
+    margin-top: 8px;
+  }
+}
+
+.error-text {
+  color: #b00020;
+}
+
+.muted {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 960px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.request-card,
+.response-card {
+  padding: 16px;
+
+  h2 {
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    margin: 16px 0 8px;
+    font-size: 0.9rem;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.resolved-path {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.85rem;
+  margin: 12px 0;
+  word-break: break-all;
+}
+
+.request-url {
+  word-break: break-all;
+  font-size: 0.85rem;
+}
+
+.response-block {
+  background: #f5f5f5;
+  padding: 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.8rem;
+}

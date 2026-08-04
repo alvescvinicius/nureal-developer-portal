@@ -1,0 +1,42 @@
+<div class="exemplos">
+  @if (loading) {
+    <mat-spinner diameter="32"></mat-spinner>
+  }
+
+  @if (loadError) {
+    <p class="error-text">Não foi possível carregar os exemplos desta API.</p>
+  }
+
+  @if (detail) {
+    <header class="page-header">
+      <h1>{{ detail.meta.name }} — Exemplos</h1>
+      <p>
+        Exemplos gerados para o ambiente global selecionado:
+        <strong>{{ environmentService.currentEnvironment() }}</strong>
+      </p>
+    </header>
+
+    <h2>Exemplos de requisição (cURL)</h2>
+    <mat-accordion multi>
+      @for (endpoint of endpoints; track endpoint.method + endpoint.path) {
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ endpoint.method.toUpperCase() }} {{ endpoint.path }}</mat-panel-title>
+            <mat-panel-description>{{ endpoint.operation.summary }}</mat-panel-description>
+          </mat-expansion-panel-header>
+          <pre class="curl-block">{{ curlExample(endpoint) }}</pre>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+
+    @if (detail.docs.length) {
+      <h2>Guias adicionais</h2>
+      @for (doc of detail.docs; track doc.fileName) {
+        <div class="doc-block">
+          <h3>{{ doc.title }}</h3>
+          <pre class="markdown-block">{{ docsContent.get(doc.fileName) }}</pre>
+        </div>
+      }
+    }
+  }
+</div>

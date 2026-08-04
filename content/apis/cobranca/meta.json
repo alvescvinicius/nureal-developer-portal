@@ -1,0 +1,6 @@
+{
+  "name": "Cobrança",
+  "slug": "cobranca",
+  "description": "API para geração de boletos/faturas, consulta de status de pagamento e baixa de cobranças.",
+  "auth": "oauth2"
+}

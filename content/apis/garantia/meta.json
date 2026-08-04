@@ -1,0 +1,6 @@
+{
+  "name": "Garantia",
+  "slug": "garantia",
+  "description": "API para emissão, consulta e cancelamento de apólices de seguro garantia.",
+  "auth": "apiKey"
+}

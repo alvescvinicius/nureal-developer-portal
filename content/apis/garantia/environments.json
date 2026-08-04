@@ -1,0 +1,5 @@
+{
+  "DEV": "https://dev.api.nureal.com.br/garantia",
+  "HML": "https://hml.api.nureal.com.br/garantia",
+  "PRD": "https://api.nureal.com.br/garantia"
+}

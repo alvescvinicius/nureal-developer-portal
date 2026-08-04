@@ -1,0 +1,113 @@
+<div class="testar">
+  @if (loading) {
+    <mat-spinner diameter="32"></mat-spinner>
+  }
+
+  @if (loadError) {
+    <p class="error-text">Não foi possível carregar os endpoints desta API.</p>
+  }
+
+  @if (detail) {
+    <header class="page-header">
+      <h1>{{ detail.meta.name }} — Testar API</h1>
+      <mat-chip-set>
+        <mat-chip color="primary" selected disableRipple>
+          Ambiente: {{ environmentService.currentEnvironment() }}
+        </mat-chip>
+        <mat-chip disableRipple>{{ detail.environments[environmentService.currentEnvironment()] }}</mat-chip>
+      </mat-chip-set>
+    </header>
+
+    <div class="form-grid">
+      <mat-card class="request-card">
+        <h2>Requisição</h2>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Endpoint</mat-label>
+          <mat-select [(ngModel)]="selectedEndpoint" (selectionChange)="onEndpointChange()">
+            @for (endpoint of endpoints; track endpoint.method + endpoint.path) {
+              <mat-option [value]="endpoint">
+                {{ endpoint.method.toUpperCase() }} {{ endpoint.path }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        @if (selectedEndpoint) {
+          @if (pathParamNames.length) {
+            <h3>Path params</h3>
+            @for (name of pathParamNames; track name) {
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ name }}</mat-label>
+                <input matInput [(ngModel)]="pathParamValues[name]" [name]="'path-' + name" />
+              </mat-form-field>
+            }
+          }
+
+          @if (queryParamNames.length) {
+            <h3>Query params</h3>
+            @for (name of queryParamNames; track name) {
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ name }}</mat-label>
+                <input matInput [(ngModel)]="queryParamValues[name]" [name]="'query-' + name" />
+              </mat-form-field>
+            }
+          }
+
+          <h3>Headers</h3>
+          @for (name of headerValues | keyvalue; track name.key) {
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ name.key }}</mat-label>
+              <input matInput [(ngModel)]="headerValues[name.key]" [name]="'header-' + name.key" />
+            </mat-form-field>
+          }
+
+          @if (hasRequestBody) {
+            <h3>Body (JSON)</h3>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Corpo da requisição</mat-label>
+              <textarea matInput rows="8" [(ngModel)]="bodyText" name="bodyText"></textarea>
+            </mat-form-field>
+            @if (bodyError) {
+              <p class="error-text">{{ bodyError }}</p>
+            }
+          }
+
+          <p class="resolved-path"><strong>URL relativa:</strong> {{ buildResolvedPath() }}</p>
+
+          <button mat-raised-button color="primary" [disabled]="sending" (click)="send()">
+            @if (sending) {
+              Enviando...
+            } @else {
+              Enviar requisição
+            }
+          </button>
+
+          @if (sendError) {
+            <p class="error-text">{{ sendError }}</p>
+          }
+        }
+      </mat-card>
+
+      <mat-card class="response-card">
+        <h2>Resposta</h2>
+        @if (!response) {
+          <p class="muted">Envie uma requisição para ver a resposta aqui.</p>
+        } @else {
+          <p>
+            <strong>Status:</strong> {{ response.status }} {{ response.statusText }}
+            &nbsp;·&nbsp;
+            <strong>Tempo:</strong> {{ response.durationMs }}ms
+          </p>
+          <p class="request-url"><strong>URL:</strong> {{ response.requestUrl }}</p>
+
+          <h3>Headers</h3>
+          <pre class="response-block">{{ response.headers | json }}</pre>
+
+          <h3>Body</h3>
+          <pre class="response-block">{{ response.body | json }}</pre>
+        }
+      </mat-card>
+    </div>
+  }
+</div>

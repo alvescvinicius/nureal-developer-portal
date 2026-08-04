@@ -1,0 +1,5 @@
+{
+  "DEV": "https://dev.api.nureal.com.br/capitalizacao",
+  "HML": "https://hml.api.nureal.com.br/capitalizacao",
+  "PRD": "https://api.nureal.com.br/capitalizacao"
+}

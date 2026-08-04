@@ -1,0 +1,6 @@
+{
+  "name": "Capitalização",
+  "slug": "capitalizacao",
+  "description": "API para contratação, consulta e resgate de títulos de capitalização.",
+  "auth": "bearer"
+}

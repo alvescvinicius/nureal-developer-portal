@@ -1,0 +1,109 @@
+<div class="contratos">
+  @if (loading) {
+    <mat-spinner diameter="32"></mat-spinner>
+  }
+
+  @if (loadError) {
+    <p class="error-text">Não foi possível carregar o contrato desta API.</p>
+  }
+
+  @if (detail) {
+    <header class="page-header">
+      <h1>{{ detail.meta.name }} — Contratos</h1>
+      <p>{{ detail.openapi.info.description || detail.meta.description }}</p>
+      <mat-chip-set>
+        <mat-chip disableRipple>versão {{ detail.openapi.info.version }}</mat-chip>
+        <mat-chip disableRipple>auth: {{ detail.meta.auth }}</mat-chip>
+      </mat-chip-set>
+    </header>
+
+    <mat-accordion multi>
+      @for (endpoint of endpoints; track endpoint.method + endpoint.path) {
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <span class="method-badge" [attr.data-method]="endpoint.method">
+                {{ endpoint.method.toUpperCase() }}
+              </span>
+              <span class="path">{{ endpoint.path }}</span>
+            </mat-panel-title>
+            <mat-panel-description>
+              {{ endpoint.operation.summary }}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <mat-tab-group>
+            <mat-tab label="Parâmetros">
+              @if (endpoint.operation.parameters?.length) {
+                <table class="params-table">
+                  <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>Local</th>
+                      <th>Obrigatório</th>
+                      <th>Tipo</th>
+                      <th>Descrição</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (param of endpoint.operation.parameters; track param.name) {
+                      <tr>
+                        <td>{{ param.name }}</td>
+                        <td>{{ param.in }}</td>
+                        <td>{{ param.required ? 'Sim' : 'Não' }}</td>
+                        <td>{{ param.schema?.['type'] || '-' }}</td>
+                        <td>{{ param.description || '-' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              } @else {
+                <p class="muted">Este endpoint não possui parâmetros.</p>
+              }
+            </mat-tab>
+
+            <mat-tab label="Request Body">
+              @if (requestBodySchema(endpoint); as schema) {
+                <pre class="schema-block">{{ schema | json }}</pre>
+              } @else {
+                <p class="muted">Este endpoint não possui request body.</p>
+              }
+            </mat-tab>
+
+            <mat-tab label="Respostas">
+              @for (entry of successResponses(endpoint); track entry[0]) {
+                <div class="response-block">
+                  <h4>{{ entry[0] }}</h4>
+                  <pre class="schema-block">{{ responseSchema(entry[1]) | json }}</pre>
+                </div>
+              }
+            </mat-tab>
+
+            <mat-tab label="Erros">
+              @if (errorRows(endpoint).length) {
+                <table class="errors-table">
+                  <thead>
+                    <tr>
+                      <th>Status</th>
+                      <th>Descrição</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (row of errorRows(endpoint); track row.status) {
+                      <tr>
+                        <td>{{ row.status }}</td>
+                        <td>{{ row.description }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              } @else {
+                <p class="muted">Nenhum erro documentado para este endpoint.</p>
+              }
+            </mat-tab>
+          </mat-tab-group>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  }
+</div>

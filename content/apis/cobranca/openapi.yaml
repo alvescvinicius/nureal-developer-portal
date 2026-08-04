@@ -1,0 +1,251 @@
+openapi: 3.0.3
+info:
+  title: Nureal Cobrança API
+  description: API para geração de cobranças, consulta de status de pagamento e baixa manual.
+  version: "2.1.0"
+  contact:
+    name: Squad Cobrança
+    email: squad-cobranca@nureal.com.br
+servers:
+  - url: /cobranca
+tags:
+  - name: Cobrancas
+    description: Operações sobre cobranças (boletos/faturas)
+paths:
+  /v1/cobrancas:
+    get:
+      operationId: listarCobrancas
+      tags: [Cobrancas]
+      summary: Lista cobranças
+      security:
+        - OAuth2: [cobranca.read]
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/CobrancaStatus'
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Lista de cobranças retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 8
+                  page:
+                    type: integer
+                    example: 1
+                  pageSize:
+                    type: integer
+                    example: 20
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cobranca'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      operationId: criarCobranca
+      tags: [Cobrancas]
+      summary: Cria uma nova cobrança
+      security:
+        - OAuth2: [cobranca.write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NovaCobrancaRequest'
+      responses:
+        '201':
+          description: Cobrança criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cobranca'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /v1/cobrancas/{cobrancaId}:
+    get:
+      operationId: obterCobranca
+      tags: [Cobrancas]
+      summary: Consulta uma cobrança pelo identificador
+      security:
+        - OAuth2: [cobranca.read]
+      parameters:
+        - name: cobrancaId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Cobrança encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cobranca'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /v1/cobrancas/{cobrancaId}/baixa:
+    post:
+      operationId: baixarCobranca
+      tags: [Cobrancas]
+      summary: Realiza a baixa manual de uma cobrança
+      security:
+        - OAuth2: [cobranca.write]
+      parameters:
+        - name: cobrancaId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [dataPagamento, valorPago]
+              properties:
+                dataPagamento:
+                  type: string
+                  format: date
+                valorPago:
+                  type: number
+                  format: double
+      responses:
+        '200':
+          description: Cobrança baixada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cobranca'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.nureal.com.br/oauth2/token
+          scopes:
+            cobranca.read: Leitura de cobranças
+            cobranca.write: Criação e atualização de cobranças
+  schemas:
+    CobrancaStatus:
+      type: string
+      enum: [PENDENTE, PAGA, VENCIDA, CANCELADA]
+    Cobranca:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        numeroDocumento:
+          type: string
+          example: "COB-2026-000789"
+        pagador:
+          type: string
+          example: "João Pereira"
+        valor:
+          type: number
+          format: double
+          example: 259.90
+        vencimento:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/CobrancaStatus'
+        linhaDigitavel:
+          type: string
+          example: "34191.79001 01043.510047 91020.150008 1 96610000025990"
+    NovaCobrancaRequest:
+      type: object
+      required: [pagador, valor, vencimento]
+      properties:
+        pagador:
+          type: string
+          example: "João Pereira"
+        valor:
+          type: number
+          format: double
+          example: 259.90
+        vencimento:
+          type: string
+          format: date
+          example: "2026-09-10"
+    ErroPadrao:
+      type: object
+      properties:
+        codigo:
+          type: string
+          example: "COBRANCA_400"
+        mensagem:
+          type: string
+          example: "Campo 'valor' deve ser maior que zero"
+        timestamp:
+          type: string
+          format: date-time
+  responses:
+    BadRequest:
+      description: Requisição inválida
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErroPadrao'
+    Unauthorized:
+      description: Token OAuth2 ausente, inválido ou sem escopo necessário
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErroPadrao'
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErroPadrao'
+    InternalError:
+      description: Erro interno inesperado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErroPadrao'

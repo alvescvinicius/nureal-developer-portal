@@ -1,0 +1,5 @@
+{
+  "DEV": "https://dev.api.nureal.com.br/clientes",
+  "HML": "https://hml.api.nureal.com.br/clientes",
+  "PRD": "https://api.nureal.com.br/clientes"
+}
